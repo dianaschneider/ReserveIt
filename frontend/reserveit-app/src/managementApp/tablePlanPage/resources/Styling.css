@@ -1,0 +1,7 @@
+.center-div-row {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+}
