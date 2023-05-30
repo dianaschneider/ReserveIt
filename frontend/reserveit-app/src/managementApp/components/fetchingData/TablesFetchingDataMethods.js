@@ -1,14 +1,3 @@
-//TODO:
-export const getTableConfiguration = async (restaurantId) => {
-    return [];
-}
-
-//TODO:
-export const addTableConfiguration = async (table) => {
-    return [];
-};
-
-//TODO:
+//TODO: delete it & delete file when implementing delete functionalities
 export const deleteTableConfiguration = async (restaurantId) => {
-
 }

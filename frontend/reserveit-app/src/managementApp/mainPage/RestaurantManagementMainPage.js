@@ -8,12 +8,10 @@ import TablePlan from "../tablePlanPage/TablePlan";
 import Orders from "../ordersPage/Orders";
 import TablePage from "../tablePage/TablePage";
 import {GENERIC_RESTAURANT_ID} from "../../resources/Constants";
-import {
-    addTableConfiguration,
-    deleteTableConfiguration,
-    getTableConfiguration
-} from "../components/fetchingData/TablesFetchingDataMethods";
-import {addFood, deleteFood, getFood} from "../components/fetchingData/MenuFetchingDataMethods";
+import {deleteTableConfiguration} from "../components/fetchingData/TablesFetchingDataMethods";
+import {deleteFoodFromMenu} from "../components/fetchingData/MenuFetchingDataMethods";
+import axios from "axios";
+import {AUTH_TOKEN, DATABASE_PATH} from "../components/fetchingData/Constants";
 
 const RestaurantManagementMainPage = (props) => {
     const [tablesData, setTablesData] = useState([]);
@@ -23,36 +21,73 @@ const RestaurantManagementMainPage = (props) => {
 
     useEffect(() => {
         //get menu data from db
-        getFood().then((arr) => {
-            setFoodData(arr);
+        getMenuData().then(() => {
         });
 
         //get tables data from db
-        getTableConfiguration(GENERIC_RESTAURANT_ID).then((arr) => {
-            arr = arr.sort((a, b) => a.tableConfiguration.index - b.tableConfiguration.index);
-            setTablesData(arr);
+        getTableConfiguration().then(() => {
         });
     }, []);
 
-    const saveItem = (item, items) => {
-        //items.filter(function(item) {return getFoodItem(item).isEmpty()}).map((item) => addFood(item));
-        //items.map((item) => addFood(item));
-        addFood(item).then(() => setFoodData(items));
+    //get menu info
+    const getMenuData = async () => {
+        axios.get(`${DATABASE_PATH}/menu.json?auth=${AUTH_TOKEN}`)
+            .then(res => {
+                if (res.status === 200) {
+                    setFoodData(Object.entries(res.data).map(([key, value]) => ({key, ...value})));
+                }
+            })
+            .catch(() => console.log("GET ERROR"));
+    }
+    const addFoodToMenu = async (item) => {
+        axios.post(`${DATABASE_PATH}/menu.json?auth=${AUTH_TOKEN}`, item)
+            .then(res => {
+                if (res.status === 200) {
+                    console.log("POST SUCCEEDED")
+                    getMenuData();
+                }
+            })
+            .catch(() => console.log("GET ERROR"));
     }
 
-    const deleteItem = (items, itemId) => {
-        items.filter(() => deleteFood(itemId));
+    //update menu info in db
+    const saveFoodItemInRestaurantMenu = (item) => {
+        addFoodToMenu(item).then(() => {
+        });
+    }
+    const deleteFoodItemFromRestaurantMenu = (items, itemId) => {
+        items.filter(() => deleteFoodFromMenu(itemId));
         setFoodData(items);
     }
 
+    //get tables info
+    const getTableConfiguration = async () => {
+        //TODO: add restaurant id
+        axios.get(`${DATABASE_PATH}/restaurant.json?auth=${AUTH_TOKEN}`)
+            .then(res => {
+                if (res.status === 200) {
+                    setTablesData(Object.entries(res.data).map(([key, value]) => ({key, ...value})));
+                }
+            })
+            .catch(() => console.log("GET ERROR"));
+    }
+    const addTableConfiguration = async (table) => {
+        axios.post(`${DATABASE_PATH}/restaurant.json?auth=${AUTH_TOKEN}`, table)
+            .then(res => {
+                if (res.status === 200) {
+                    console.log("POST SUCCEEDED")
+                    getTableConfiguration();
+                }
+            })
+            .catch(() => console.log("GET ERROR"));
+    };
+
     //update tables info in db
     const saveTablesConfiguration = (newTableConfiguration) => {
-        newTableConfiguration.map((el) => {
-            addTableConfiguration(el).then(() => {});
-            return el;
-        });
-        setTablesData(newTableConfiguration);
-        props.updateMaxTableNumber(newTableConfiguration.length);
+        newTableConfiguration.forEach(table => {
+            addTableConfiguration(table).then(() => {
+            })
+        })
     };
     const deleteTablesConfiguration = () => {
         deleteTableConfiguration(GENERIC_RESTAURANT_ID).then(() => {
@@ -80,8 +115,8 @@ const RestaurantManagementMainPage = (props) => {
             key: 'configure-menu',
             children: <MenuConfiguration
                 foodData={foodData}
-                saveItem={saveItem}
-                deleteItem={deleteItem}/>
+                saveItem={saveFoodItemInRestaurantMenu}
+                deleteItem={deleteFoodItemFromRestaurantMenu}/>
         },
         {
             label: <span><AppstoreOutlined/>Table Plan</span>,

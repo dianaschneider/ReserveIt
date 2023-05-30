@@ -1,14 +1,4 @@
-//TODO:
-export const getFood = async () => {
-    return [];
-}
-
-//TODO:
-export const addFood = async (item) => {
-    return [];
-}
-
-//TODO:
-export const deleteFood = async (itemId) => {
+//TODO: delete it & delete file when implementing delete functionalities
+export const deleteFoodFromMenu = async (itemId) => {
 
 }
