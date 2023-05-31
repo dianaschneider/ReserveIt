@@ -6,7 +6,10 @@ const MenuCategory = (props) => {
     return <div>
         {props.categoryItems.map(element => {
             return <Row>
-                <MenuItem item={element}/>
+                <MenuItem
+                    item={element}
+                    addItemToCart={props.addItemToCart}
+                />
             </Row>
         })}
     </div>

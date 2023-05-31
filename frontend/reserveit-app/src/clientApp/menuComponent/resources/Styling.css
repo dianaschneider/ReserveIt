@@ -17,3 +17,8 @@
     font-size: medium;
     font-family: 'Roboto Condensed';
 }
+
+.buttonRowStyling {
+    display: flex;
+    justify-content: right;
+}
