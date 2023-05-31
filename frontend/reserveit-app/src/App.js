@@ -1,6 +1,6 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import LandingPage from "./managementApp/landingPage/LandingPage";
-import RestaurantClientMainPage from "./clientApp/RestaurantClientMainPage";
+import RestaurantClientMainPage from "./clientApp/mainPage/RestaurantClientMainPage";
 import RestaurantManagementMainPage from "./managementApp/mainPage/RestaurantManagementMainPage";
 import {useState} from "react";
 
@@ -14,7 +14,7 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<LandingPage/>}/>
-                <Route path="/tables/:tableId" element={<RestaurantClientMainPage/>}/>
+                <Route path="/tables/:tableId" element={<RestaurantClientMainPage maxTableNumber={maxTableNumber}/>}/>
                 <Route path="/restaurant"
                        element={<RestaurantManagementMainPage updateMaxTableNumber={updateMaxTableNumber}/>}/>
             </Routes>
