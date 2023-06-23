@@ -4,7 +4,7 @@ import {Table} from 'antd';
 const columns = [
     {
         title: 'Item',
-        dataIndex: 'item',
+        dataIndex: 'name',
         key: 'item'
     },
     {
@@ -21,6 +21,9 @@ const columns = [
         title: 'Price',
         dataIndex: 'price',
         key: 'price',
+        render: (price) => {
+            return <div>{price.value} {price.currency}</div>
+        }
     },
     {
         title: 'Description',
@@ -41,6 +44,7 @@ const columns = [
 
 const MenuTable = (props) => {
     const menuData = props.menuData;
+
     //TODO: make menu table editable so that the admin can edit the data or delete an entry
     return <Table
         columns={columns}

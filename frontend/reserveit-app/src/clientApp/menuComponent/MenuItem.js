@@ -11,7 +11,8 @@ const MenuItem = (props) => {
         props.addItemToCart({
             itemData: itemData,
             quantity: numAdded+1,
-            editable: Boolean(props.item.editable)
+            editable: Boolean(props.item.editable),
+            delivered: props.item.delivered
         })
         setNumAdded(numAdded + 1);
     };
@@ -22,13 +23,14 @@ const MenuItem = (props) => {
         props.addItemToCart({
             itemData: itemData,
             quantity: numAdded - 1,
-            editable: props.item.editable
+            editable: props.item.editable,
+            delivered: props.item.delivered
         })
         setNumAdded(numAdded - 1);
     };
 
     return <Row className="menuItemRow">
-        <Row className="menuItemName">{itemData.item}</Row>
+        <Row className="menuItemName">{itemData.name}</Row>
         <Row className="menuItemData">{itemData.description}</Row>
         <Row>
             <Col span={12}>
@@ -38,11 +40,11 @@ const MenuItem = (props) => {
                 </Row>
                 <Row className="menuItemData">
                     <Col span={12}>Price</Col>
-                    <Col span={12}>{itemData.price} RON</Col>
+                    <Col span={12}>{itemData.price.value} {itemData.price.currency}</Col>
                 </Row>
             </Col>
-            {/*TODO: ADD IMAGE WHEN THE FETCHING FROM BACKEND WILL BE AVAILABLE*/}
-            <Col span={12}>PICTURE</Col>
+            {/*TODO: RENDER IMAGE WHEN THE FETCHING FROM BACKEND WILL BE AVAILABLE*/}
+            <Col span={12}>{itemData.image}</Col>
         </Row>
         {
             props.item.editable ?
@@ -64,8 +66,7 @@ const MenuItem = (props) => {
                 :
                 <Row className="buttonRowStyling">
                     <Col style={{ marginRight: '20px' }}>
-                        {/*TODO: ADD ORDER STATUS FROM ORDER DATA*/}
-                        <Checkbox defaultChecked disabled />
+                        <Checkbox defaultChecked={props.item.delivered} disabled />
                     </Col>
                 </Row>
         }

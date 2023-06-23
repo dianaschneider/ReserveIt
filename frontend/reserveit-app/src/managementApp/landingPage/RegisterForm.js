@@ -1,26 +1,22 @@
 import React from "react";
 import {Button, Form, Input} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {useNavigate} from "react-router-dom";
 import './Styling.css'
 import axios from "axios";
 import {DATABASE} from "../fetchingData/Constants";
 
-const LoginForm = (props) => {
-    let navigate = useNavigate();
-
+//TODO: Create register form that will create a purchase for the management app & will configure the account for the restaurant
+const RegisterForm = (props) => {
     const onFinish = (values) => {
-        axios.post(DATABASE + "/auth/signin", values).then(res => {
-            props.initialiseUserToken(res.data.token)
-            let path = '/restaurant';
-            navigate(path);
+        axios.post(DATABASE + "/auth/signup", values).then(() => {
+            props.updateLoginMode(true);
         })
-            .catch(() => alert('Wrong credentials or user does not exist'))
+            .catch(() => alert('Wrong credentials'))
     };
 
     return (
         <Form
-            name="normal_login"
+            name="register-form"
             className="form"
             initialValues={{remember: true,}}
             onFinish={onFinish}
@@ -43,16 +39,11 @@ const LoginForm = (props) => {
             </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" className="form-buttons-login">
-                    Log in
-                </Button>
-            </Form.Item>
-            <Form.Item>
-                <Button type="link" className="form-buttons-register" onClick={() => props.updateLoginMode(false)}>
-                    Register Now
+                    Register
                 </Button>
             </Form.Item>
         </Form>
     );
 };
 
-export default LoginForm;
+export default RegisterForm;

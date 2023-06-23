@@ -34,12 +34,12 @@ const TablePlan = (props) => {
                 <>
                     {
                         tables.map((element) => {
-                            return <Row key={"row-table" + element.tableConfiguration.index}><TableIcon
-                                index={element.tableConfiguration.index}
-                                status={element.tableConfiguration.status}
-                                isDisabled={element.tableConfiguration.isDisabled}
-                                x={element.tableConfiguration.x}
-                                y={element.tableConfiguration.y}
+                            return <Row key={"row-table" + element.key}><TableIcon
+                                index={element.id}
+                                status={element.status}
+                                isDisabled={element.isDisabled}
+                                x={element.x}
+                                y={element.y}
                                 accessTable={accessTable}
                             /></Row>
                         })

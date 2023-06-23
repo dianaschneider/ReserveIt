@@ -10,7 +10,20 @@ const AddFoodForm = (props) => {
     //     setFileList(newFileList)
     // };
     const onFinish = (values) => {
-        props.saveItem(values);
+        const priceArray = values.price.split(/(\s+)/);
+        const item = {
+            id: values.item,
+            name: values.item,
+            price: {
+                value: priceArray[0],
+                currency: priceArray[2]
+            },
+            quantity: values.quantity,
+            image: 'IMAGE',
+            description: values.description,
+            category: values.category
+        }
+        props.saveItem(item);
         form.resetFields();
         // setFileList([]);
     };
@@ -59,7 +72,7 @@ const AddFoodForm = (props) => {
                 rules={[{required: false, message: 'Please input your item description!',},]}>
                 <Input/>
             </Form.Item>
-            {/*TODO: INVESTIGATE HOW TO ADD IMAGE AND STR=ORE IT TO DB*/}
+            {/*TODO: INVESTIGATE HOW TO ADD IMAGE AND STORE IT TO DB*/}
             {/*<Form.Item*/}
             {/*    label="Image"*/}
             {/*    name="image">*/}

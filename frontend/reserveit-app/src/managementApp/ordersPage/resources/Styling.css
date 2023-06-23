@@ -1,0 +1,14 @@
+.menuItemName {
+    font-size: large;
+    font-weight: bold;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.menuItemData {
+    font-size: medium;
+    font-family: 'Roboto Condensed', serif;
+}
+
+.checkboxStyle {
+    margin-left: 20px;
+}

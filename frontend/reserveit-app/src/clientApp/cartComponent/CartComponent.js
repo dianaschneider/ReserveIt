@@ -5,10 +5,11 @@ import './Styling.css'
 
 const CartComponent = (props) => {
     const totalCartOrder = props.currentOrder.reduce((accumulator, currentValue) => {
-        return accumulator + (parseFloat(currentValue.itemData.price) * currentValue.quantity)
+        return accumulator + (parseFloat(currentValue.itemData.price.value) * currentValue.quantity)
     }, 0);
 
     const orderTotalRowComponent = () => {
+        //TODO: ADD CURRENCY
         return <Row className="orderTotalRow">
             <Col className="orderTotalTextStyle">TOTAL AMOUNT</Col>
             <Col className="orderTotalTextStyle">{totalCartOrder} RON</Col>
@@ -16,13 +17,14 @@ const CartComponent = (props) => {
     }
 
     return <div>
-        {props.currentOrder.map((element) => {
-            return <Row>
+        {props.currentOrder.map((element, index) => {
+            const rowKey = "menu-item-"+ index + "-" +element.itemData.name;
+            return <Row key={rowKey}>
                 <MenuItem
                     item={element}
                     addItemToCart={props.addItemToCart}/>
             </Row>
-        })}
+        } )}
         {
             props.currentOrder.length === 0 ?
                 orderTotalRowComponent()
