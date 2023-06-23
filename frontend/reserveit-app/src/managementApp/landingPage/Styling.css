@@ -9,3 +9,12 @@
     display: flex;
     justify-content: center;
 }
+.form {
+    width: 500px;
+}
+.form-buttons-login {
+    margin-left: 45%;
+}
+.form-buttons-register {
+    margin-left: 41%;
+}

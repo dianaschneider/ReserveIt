@@ -3,14 +3,14 @@ import './Styling.css'
 import ClientHeader from "../header/ClientHeader";
 import MenuComponent from "../menuComponent/MenuComponent";
 import axios from "axios";
-import {AUTH_TOKEN, DATABASE_PATH} from "../../managementApp/components/fetchingData/Constants";
+import {AUTH_TOKEN, DATABASE, DATABASE_PATH} from "../../managementApp/fetchingData/Constants";
 import {Row} from "antd";
 import CartComponent from "../cartComponent/CartComponent";
 import {useParams} from "react-router";
 import NotificationAlert from "./NotificationAlert";
 
 const RestaurantClientMainPage = () => {
-    const {tableId} = useParams();
+    const {restaurantId, tableId} = useParams();
     const [foodData, setFoodData] = useState([]);
     const [isMenu, setMenu] = useState(true);
     const [currentOrder, setCurrentOrder] = useState([]);
@@ -26,37 +26,52 @@ const RestaurantClientMainPage = () => {
 
     /*FETCH DATA FOR MENU & CURRENT TABLE ORDER*/
     const getMenuData = async () => {
-        axios.get(`${DATABASE_PATH}/menu.json?auth=${AUTH_TOKEN}`)
+        axios.get(`${DATABASE}/restaurants/${restaurantId}/menu`)
             .then(res => {
                 if (res.status === 200) {
-                    setFoodData(Object.entries(res.data).map(([key, value]) => ({key, ...value})));
+                    setFoodData(Object.entries(res.data.items).map(([key, value]) => ({key, ...value})));
                 }
             })
             .catch(() => console.log("GET ERROR"));
     }
     const getTableOrder = async () => {
-        axios.get(`${DATABASE_PATH}/orders.json?auth=${AUTH_TOKEN}`)
+        axios.get(`${DATABASE}/restaurants/${restaurantId}/orders/${tableId}`)
             .then(res => {
                 if (res.status === 200) {
-                    //TODO: make this filtering on the backend side
-                    const allOrdersArr = Object.entries(res.data).map(([key, value]) => ({key, ...value}))
-                    const ordersForCurrentTable = allOrdersArr.filter(el => el.table === tableId)
-                    setCurrentOrder(ordersForCurrentTable)
+                    setCurrentOrder(res.data.items)
                 }
             })
             .catch(() => console.log("GET ERROR"));
     }
+
+    /*UPDATE DATA TO DATABASE*/
     const createOrderForTable = async (order) => {
-        axios.post(`${DATABASE_PATH}/orders.json?auth=${AUTH_TOKEN}`, order)
+        axios.get(`${DATABASE}/restaurants/${restaurantId}/orders/${tableId}`)
             .then(res => {
                 if (res.status === 200) {
-                    console.log("POST SUCCEEDED")
-                    getTableOrder()
+                    axios.put(`${DATABASE}/restaurants/${restaurantId}/orders`, order)
+                        .then(res => {
+                            if (res.status === 200) {
+                                console.log("PUT SUCCEEDED")
+                                getTableOrder()
+                            }
+                        })
+                        .catch(() => console.log("PUT ERROR"));
                 }
             })
-            .catch(() => console.log("GET ERROR"));
+            .catch(() => {
+                axios.post(`${DATABASE}/restaurants/${restaurantId}/orders`, order)
+                    .then(res => {
+                        if (res.status === 200) {
+                            console.log("POST SUCCEEDED")
+                            getTableOrder()
+                        }
+                    })
+                    .catch(() => console.log("POST ERROR"));
+            })
     }
     const createNotificationForTable = async (notification) => {
+        //TODO: IMPLEMENT NOTIFICATION BACKEND SYSTEM
         axios.post(`${DATABASE_PATH}/notifications.json?auth=${AUTH_TOKEN}`, notification)
             .then(res => {
                 if (res.status === 200) {
@@ -92,14 +107,21 @@ const RestaurantClientMainPage = () => {
             setCurrentOrder(modifiedOrder)
     }
     const placeOrder = () => {
-        currentOrder.forEach((element) => {
-            if (element.editable) {
-                element.editable = false;
-                element.table = tableId;
-                createOrderForTable(element).then(() => {
-                })
+        const order = {
+            items: currentOrder.map(element => {
+                if (element.editable) {
+                    element.editable = false;
+                    element.table = tableId;
+                    element.delivered = false;
+                }
+                return element
+            }),
+            table: {
+                id: tableId
             }
-        })
+        }
+        //todo:[SOLVE] not refreshing when updating order or creating a new one
+        createOrderForTable(order).then();
     }
     const createNotification = (notification) => {
         if (notification.type === 'BILL') {

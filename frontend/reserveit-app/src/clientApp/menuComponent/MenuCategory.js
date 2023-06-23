@@ -5,7 +5,7 @@ import MenuItem from "./MenuItem";
 const MenuCategory = (props) => {
     return <div>
         {props.categoryItems.map(element => {
-            return <Row>
+            return <Row key={"category-"+props.category}>
                 <MenuItem
                     item={element}
                     addItemToCart={props.addItemToCart}

@@ -1,18 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row, Select} from "antd";
 import TableIcon from "./TableIcon";
-import {CONFIG_TABLE, FREE_TABLE, GENERIC_RESTAURANT_ID, MAX_TABLE_NUM} from "../../resources/Constants";
+import {CONFIG_TABLE, FREE_TABLE, MAX_TABLE_NUM} from "../../resources/Constants";
 
 const createTable = (index) => {
     return {
-        restaurant: GENERIC_RESTAURANT_ID,
-        tableConfiguration: {
-            index: index,
-            status: CONFIG_TABLE,
-            isDisabled: false,
-            x: 0,
-            y: 0
-        }
+        id: index,
+        assignedWaiter: null,
+        x: 0,
+        y: 0,
+        status: CONFIG_TABLE,
+        isDisabled: false,
     };
 }
 const createTableArray = (numberOfTables) => {
@@ -48,8 +46,8 @@ const TableConfiguration = (props) => {
     };
 
     const updateCoordinates = (index, x, y) => {
-        tableArray[index - 1].tableConfiguration.x = x;
-        tableArray[index - 1].tableConfiguration.y = y;
+        tableArray[index - 1].x = x;
+        tableArray[index - 1].y = y;
         const newArray = [...tableArray];
         setTableArray(newArray);
     };
@@ -60,7 +58,7 @@ const TableConfiguration = (props) => {
         }
         //now all the tables become free to use
         tableArray.map((el) => {
-            el.tableConfiguration.status = FREE_TABLE
+            el.status = FREE_TABLE
             return el;
         });
         saveTablesConfiguration(tableArray);
@@ -91,13 +89,13 @@ const TableConfiguration = (props) => {
                     <>
                         {
                             tableArray.map((element) => {
-                                return <Row key={"row-table" + element.tableConfiguration.index}><TableIcon
-                                    index={element.tableConfiguration.index}
-                                    status={element.tableConfiguration.status}
-                                    isDisabled={element.tableConfiguration.isDisabled}
+                                return <Row key={"row-table" + element.key}><TableIcon
+                                    index={element.id}
+                                    status={element.status}
+                                    isDisabled={element.isDisabled}
                                     updateCoordinates={updateCoordinates}
-                                    x={element.tableConfiguration.x}
-                                    y={element.tableConfiguration.y}
+                                    x={element.x}
+                                    y={element.y}
                                 /></Row>
                             })
                         }

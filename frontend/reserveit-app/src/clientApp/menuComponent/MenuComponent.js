@@ -44,12 +44,12 @@ const MenuComponent = (props) => {
                 label: category,
                 children:
                     <MenuCategory
+                        category={category}
                         categoryItems={categoriesItemsMap.get(category)}
                         addItemToCart={props.addItemToCart}
                     />
             })
         })
-
         setMenuCategories(categories);
     }, [props.foodData, props.addItemToCart, props.currentOrder])
 
