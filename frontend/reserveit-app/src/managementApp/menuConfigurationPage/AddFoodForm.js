@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Form, Input} from 'antd';
+import {Button, Form, Input, Select} from 'antd';
 
 const AddFoodForm = (props) => {
     // TODO: uncomment when upload of image works
@@ -10,14 +10,10 @@ const AddFoodForm = (props) => {
     //     setFileList(newFileList)
     // };
     const onFinish = (values) => {
-        const priceArray = values.price.split(/(\s+)/);
         const item = {
-            id: values.item,
-            name: values.item,
-            price: {
-                value: priceArray[0],
-                currency: priceArray[2]
-            },
+            name: values.name,
+            price: values.price,
+            currency: values.currency,
             quantity: values.quantity,
             image: 'IMAGE',
             description: values.description,
@@ -36,6 +32,21 @@ const AddFoodForm = (props) => {
     //         </div>
     //     </div>
     // );
+    const categoryOptions = [
+        { value: 'SOFT_DRINK', label: 'Soft Drink' },
+        { value: 'WINE', label: 'Wine' },
+        { value: 'ALC_COCKTAIL', label: 'Alcoholic Cocktail' },
+        { value: 'NONALC_COCKTAIL', label: 'Nonalcoholic Cocktail' },
+        { value: 'BOTTLES', label: 'Bottles' },
+        { value: 'APPETIZER', label: 'Appetizer' },
+        { value: 'MAIN_DISH', label: 'Main Dish' },
+        { value: 'DESSERT', label: 'Dessert' },
+    ];
+    const currencyOptions = [
+        { value: 'RON', label: 'RON' },
+        { value: 'EUR', label: 'EUR' },
+    ];
+
 
     return <>
         <Form
@@ -43,16 +54,19 @@ const AddFoodForm = (props) => {
             onFinish={onFinish}
             autoComplete="off">
             <Form.Item
-                label="Item"
-                name="item"
+                label="Name"
+                name="name"
                 rules={[{required: true, message: 'Please input your item name!',},]}>
                 <Input/>
             </Form.Item>
+            {/*TODO: ADD VALIDATION FOR CATEGORY*/}
             <Form.Item
                 label="Category"
                 name="category"
                 rules={[{required: true, message: 'Please input your item category!',},]}>
-                <Input/>
+                <Select
+                    options={categoryOptions}
+                />
             </Form.Item>
             <Form.Item
                 label="Quantity"
@@ -65,6 +79,14 @@ const AddFoodForm = (props) => {
                 name="price"
                 rules={[{required: true, message: 'Please input your item price!',},]}>
                 <Input/>
+            </Form.Item>
+            <Form.Item
+                label="Currency"
+                name="currency"
+                rules={[{required: true, message: 'Please input your item currency!',},]}>
+                <Select
+                    options={currencyOptions}
+                />
             </Form.Item>
             <Form.Item
                 label="Description"

@@ -3,24 +3,30 @@ import './Styling.css'
 import ClientHeader from "../header/ClientHeader";
 import MenuComponent from "../menuComponent/MenuComponent";
 import axios from "axios";
-import {AUTH_TOKEN, DATABASE, DATABASE_PATH} from "../../managementApp/fetchingData/Constants";
+import {DATABASE} from "../../managementApp/fetchingData/Constants";
 import {Row} from "antd";
 import CartComponent from "../cartComponent/CartComponent";
 import {useParams} from "react-router";
 import NotificationAlert from "./NotificationAlert";
 
 const RestaurantClientMainPage = () => {
-    const {restaurantId, tableId} = useParams();
+    const {restaurantId, tableIndex} = useParams();
+    const [tableId, setTableId] = useState(0);
     const [foodData, setFoodData] = useState([]);
     const [isMenu, setMenu] = useState(true);
     const [currentOrder, setCurrentOrder] = useState([]);
     const [currentAlerts, setCurrentAlerts] = useState([])
 
-    useEffect(() => {
+    const refreshData =  () => {
         getMenuData().then(() => {
         });
+
         getTableOrder().then(() => {
         });
+    }
+
+    useEffect(() => {
+        refreshData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -32,53 +38,79 @@ const RestaurantClientMainPage = () => {
                     setFoodData(Object.entries(res.data.items).map(([key, value]) => ({key, ...value})));
                 }
             })
-            .catch(() => console.log("GET ERROR"));
+            .catch(() => alert('Menu data could not be fetched, please try again later!'));
     }
     const getTableOrder = async () => {
-        axios.get(`${DATABASE}/restaurants/${restaurantId}/orders/${tableId}`)
+        axios.get(`${DATABASE}/restaurants/${restaurantId}/table?tableDataId=${tableIndex}`)
             .then(res => {
                 if (res.status === 200) {
-                    setCurrentOrder(res.data.items)
+                    if (res.data.placedOrder !== null) {
+                        setCurrentOrder(res.data.placedOrder.requestedItems)
+                    }
+                    setTableId(res.data.id)
                 }
             })
-            .catch(() => console.log("GET ERROR"));
+            .catch(() => alert('Table data could not be fetched, please try again later!'));
     }
 
     /*UPDATE DATA TO DATABASE*/
-    const createOrderForTable = async (order) => {
-        axios.get(`${DATABASE}/restaurants/${restaurantId}/orders/${tableId}`)
-            .then(res => {
-                if (res.status === 200) {
-                    axios.put(`${DATABASE}/restaurants/${restaurantId}/orders`, order)
-                        .then(res => {
-                            if (res.status === 200) {
-                                console.log("PUT SUCCEEDED")
-                                getTableOrder()
-                            }
+    const addRequestedItemsToOrder = async (orderId, oldOrder, newOrder) => {
+        newOrder.forEach(requestedItem => {
+            const identicalItemInOldOrder = oldOrder
+                .filter(element => element.item === requestedItem.item &&
+                    element.numberRequested === requestedItem.numberRequested &&
+                    element.delivered === requestedItem.delivered &&
+                    element.editable === requestedItem.editable);
+            if (identicalItemInOldOrder.length === 0) {
+                // check if the item is a dublicate that was not delivered
+                const undeliveredItemInOldOrder = oldOrder
+                    .filter(element => element.item === requestedItem.item &&
+                        element.numberRequested !== requestedItem.numberRequested &&
+                        !element.delivered && element.editable);
+
+                if (undeliveredItemInOldOrder.length > 0) {
+                    //edit the existing item in the order with the new requested elements
+                    axios.put(DATABASE + `/requested-items/edit?itemId=${requestedItem.id}&numberRequested=${requestedItem.numberRequested}`)
+                        .then(() => {
+                            refreshData()
                         })
-                        .catch(() => console.log("PUT ERROR"));
-                }
-            })
-            .catch(() => {
-                axios.post(`${DATABASE}/restaurants/${restaurantId}/orders`, order)
-                    .then(res => {
-                        if (res.status === 200) {
-                            console.log("POST SUCCEEDED")
-                            getTableOrder()
-                        }
+                        .catch(() => alert('Number of requested elements for item could not be modified!'))
+                } else {
+                    // add the new item to the order
+                    if (requestedItem.numberRequested === 0)
+                        return;
+                    axios.post(DATABASE + `/requested-items?placedOrderId=${orderId}&itemId=${requestedItem.item}`, {
+                        "numberRequested": requestedItem.numberRequested
                     })
-                    .catch(() => console.log("POST ERROR"));
-            })
+                        .then(() => {
+                            refreshData()
+                        })
+                        .catch(() => alert('The item could not be added to the order!'))
+                }
+            }
+        });
+    };
+    const createOrderForTable = async () => {
+         const tableResponse = await axios.get(DATABASE + `/restaurants/${restaurantId}/table?tableDataId=${tableIndex}`)
+         if (tableResponse.status === 200) {
+             const tableData = tableResponse.data;
+             if (tableData.placedOrder === null) {
+                 //first create an empty order
+                 await axios.post(DATABASE + `/orders?tableDataId=${tableId}`, {});
+            }
+         }
+         const updatedTableResponse = await axios.get(`${DATABASE}/restaurants/${restaurantId}/table?tableDataId=${tableIndex}`)
+         if (updatedTableResponse.status === 200) {
+             await addRequestedItemsToOrder(updatedTableResponse.data.placedOrder.id, updatedTableResponse.data.placedOrder.requestedItems, currentOrder)
+         }
+         refreshData()
     }
     const createNotificationForTable = async (notification) => {
-        //TODO: IMPLEMENT NOTIFICATION BACKEND SYSTEM
-        axios.post(`${DATABASE_PATH}/notifications.json?auth=${AUTH_TOKEN}`, notification)
-            .then(res => {
-                if (res.status === 200) {
-                    console.log("POST SUCCEEDED")
-                }
+        axios.post(`${DATABASE}/notifications?tableDataId=${tableId}`, notification)
+            .then(() => {
+                refreshData()
             })
-            .catch(() => console.log("GET ERROR"));
+            .catch(() => alert("Notification could not be sent!"));
     }
 
     const renderMenu = () => {
@@ -92,7 +124,7 @@ const RestaurantClientMainPage = () => {
         const order = [...currentOrder];
         let updated = false;
         const modifiedOrder = order.map(element => {
-            if (element.itemData.key === menuItem.itemData.key && element.editable) {
+            if (element.item === menuItem.item && element.editable) {
                 updated = true;
                 return menuItem;
             } else {
@@ -101,27 +133,10 @@ const RestaurantClientMainPage = () => {
         });
         if (!updated)
             modifiedOrder.push(menuItem);
-        if (menuItem.quantity === 0)
-            setCurrentOrder(modifiedOrder.filter(element => element !== menuItem))
-        else
-            setCurrentOrder(modifiedOrder)
+        setCurrentOrder(modifiedOrder)
     }
     const placeOrder = () => {
-        const order = {
-            items: currentOrder.map(element => {
-                if (element.editable) {
-                    element.editable = false;
-                    element.table = tableId;
-                    element.delivered = false;
-                }
-                return element
-            }),
-            table: {
-                id: tableId
-            }
-        }
-        //todo:[SOLVE] not refreshing when updating order or creating a new one
-        createOrderForTable(order).then();
+        createOrderForTable().then();
     }
     const createNotification = (notification) => {
         if (notification.type === 'BILL') {
@@ -183,10 +198,12 @@ const RestaurantClientMainPage = () => {
                     isMenu ?
                         <MenuComponent
                             foodData={foodData}
+                            currentOrder={currentOrder}
                             addItemToCart={addItemToCart}
-                            currentOrder={currentOrder}/>
+                        />
                         :
                         <CartComponent
+                            foodData={foodData}
                             currentOrder={currentOrder}
                             addItemToCart={addItemToCart}
                             placeOrder={placeOrder}

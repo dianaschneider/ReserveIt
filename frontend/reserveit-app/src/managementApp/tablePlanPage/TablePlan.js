@@ -33,9 +33,10 @@ const TablePlan = (props) => {
                 </Row>
                 <>
                     {
-                        tables.map((element) => {
+                        tables.map((element, index) => {
                             return <Row key={"row-table" + element.key}><TableIcon
-                                index={element.id}
+                                index={element.index}
+                                id={element.id}
                                 status={element.status}
                                 isDisabled={element.isDisabled}
                                 x={element.x}

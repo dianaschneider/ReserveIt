@@ -5,12 +5,11 @@ import {CONFIG_TABLE, FREE_TABLE, MAX_TABLE_NUM} from "../../resources/Constants
 
 const createTable = (index) => {
     return {
-        id: index,
-        assignedWaiter: null,
+        index: index,
         x: 0,
         y: 0,
         status: CONFIG_TABLE,
-        isDisabled: false,
+        disabled: false,
     };
 }
 const createTableArray = (numberOfTables) => {
@@ -38,7 +37,8 @@ const TableConfiguration = (props) => {
         setNumberOfTables(tablesData.length);
         setTableArray(arr);
         setCanUpdateNumberOfTables(tablesData.length === 0);
-    }, [tablesData]);
+        // eslint-disable-next-line
+    }, []);
 
     const updateNumberOfTables = (tableNumValue) => {
         setNumberOfTables(tableNumValue);
@@ -66,12 +66,16 @@ const TableConfiguration = (props) => {
     }
 
     const deleteConfiguration = () => {
-        deleteTablesConfiguration();
-        setNumberOfTables(0);
-        setTableArray([]);
-        setCanUpdateNumberOfTables(true);
+        const tablesWithActiveOrders = tablesData.filter(table => table.placedOrder !== null);
+        if (tablesWithActiveOrders.length > 0) {
+            alert("Cannot delete table configuration, there are still orders in progress!")
+        } else {
+            deleteTablesConfiguration();
+            setNumberOfTables(0);
+            setTableArray([]);
+            setCanUpdateNumberOfTables(true);
+        }
     }
-
     return (
         <>
             <Row>
@@ -89,11 +93,12 @@ const TableConfiguration = (props) => {
                     <>
                         {
                             tableArray.map((element) => {
-                                return <Row key={"row-table" + element.key}><TableIcon
-                                    index={element.id}
+                                return <Row key={"row-table" + element.index}><TableIcon
+                                    index={element.index}
                                     status={element.status}
-                                    isDisabled={element.isDisabled}
+                                    isDisabled={element.disabled}
                                     updateCoordinates={updateCoordinates}
+                                    accessTable={()=>{alert("Cannot access table data from this menu, go to Table Plan for this operation!")}}
                                     x={element.x}
                                     y={element.y}
                                 /></Row>

@@ -21,18 +21,19 @@ const OrdersList = (props) => {
         >
             <List
                 dataSource={props.ordersData}
-                renderItem={(item) => (
-                    <List.Item
-                        key={"order-nr-" + item.key}
+                renderItem={(item) => {
+                    const table = props.tablesData.filter(table => table.id === item.tableData)[0]
+                    return (<List.Item
+                        key={"order-nr-" + item.id}
                         style={{height: 150}}>
                         <List.Item.Meta
                             avatar={<Avatar size="large" icon={<img src={order} alt=""/>}/>}
-                            title={<div>{"Order for Table " + item.table.id}</div>}
+                            title={<div>{"Order for Table " + table.index}</div>}
                             description={item.status}
                         />
-                        <Button type="primary" onClick={() => props.seeOrder(item.key)}>See order content</Button>
-                    </List.Item>
-                )}
+                        <Button type="primary" onClick={() => props.seeOrder(item.id)}>See order content</Button>
+                    </List.Item>)
+                }}
             />
         </InfiniteScroll>
     </div>

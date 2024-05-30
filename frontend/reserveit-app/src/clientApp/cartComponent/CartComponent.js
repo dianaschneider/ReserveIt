@@ -1,11 +1,12 @@
 import React from "react";
 import {Button, Col, Row} from "antd";
-import MenuItem from "../menuComponent/MenuItem";
 import './Styling.css'
+import MenuItem from "../menuComponent/MenuItem";
 
 const CartComponent = (props) => {
     const totalCartOrder = props.currentOrder.reduce((accumulator, currentValue) => {
-        return accumulator + (parseFloat(currentValue.itemData.price.value) * currentValue.quantity)
+        const itemData = props.foodData.filter(item => item.id === currentValue.item)[0];
+        return accumulator + (parseFloat(itemData.price) * currentValue.numberRequested)
     }, 0);
 
     const orderTotalRowComponent = () => {
@@ -18,10 +19,13 @@ const CartComponent = (props) => {
 
     return <div>
         {props.currentOrder.map((element, index) => {
-            const rowKey = "menu-item-"+ index + "-" +element.itemData.name;
+            const itemData = props.foodData.filter(item => item.id === element.item)[0];
+            const rowKey = "menu-item-"+ index + "-" +itemData.name;
             return <Row key={rowKey}>
                 <MenuItem
+                    itemData={itemData}
                     item={element}
+                    cartComponent={true}
                     addItemToCart={props.addItemToCart}/>
             </Row>
         } )}

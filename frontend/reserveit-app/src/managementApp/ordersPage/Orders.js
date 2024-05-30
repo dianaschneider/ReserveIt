@@ -4,15 +4,20 @@ import OrderContent from "./OrderContent";
 
 const Orders = (props) => {
     const [listComponent, setListComponent] = useState(true);
-    const [displayedOrder, setDisplayedOrder] = useState({});
+    const [displayedOrder, setDisplayedOrder] = useState(0);
 
-    const seeOrder = (i) => {
+    const seeOrder = (orderId) => {
         setListComponent(false);
-        setDisplayedOrder(props.ordersData[i]);
+        setDisplayedOrder(orderId); // TODO: change to fetch from BE
     }
     const backToList = () => {
         setListComponent(true);
-        setDisplayedOrder({});
+        setDisplayedOrder(0);
+    }
+
+    const payBill = (id) => {
+        backToList();
+        props.payBill(id);
     }
 
     return <div>
@@ -20,12 +25,16 @@ const Orders = (props) => {
             listComponent ?
                 <OrdersList
                     ordersData={props.ordersData}
+                    tablesData={props.tablesData}
                     seeOrder={seeOrder}/>
                 :
                 <OrderContent
-                    order={displayedOrder}
+                    orderId={displayedOrder}
                     backToList={backToList}
+                    isOrdersPage={true}
                     updateOrderStatus={props.updateOrderStatus}
+                    items={props.items}
+                    payBill={payBill}
                 />
         }
     </div>

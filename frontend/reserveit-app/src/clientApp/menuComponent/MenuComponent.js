@@ -17,12 +17,17 @@ const createCategoriesItemsMap = (categoriesSet, foodData, currentOrder) => {
     categoriesSet.forEach(category => {
         const itemsFromCategory = foodData.filter((element) => element.category === category)
             .map(data => {
-                const orderedItem = currentOrder.filter((element) => element.itemData.key === data.key && element.editable)
-                const numOrdered = orderedItem.length === 0 ? 0 :  orderedItem[0].quantity;
+                const orderedItem = currentOrder.filter((element) => element.item === data.id && element.editable)
+                const item = orderedItem.length > 0 ? orderedItem[0] : {
+                    id: 0,
+                    item: data.id,
+                    numberRequested: 0,
+                    editable: true,
+                    delivered: false
+                }
                 return {
                     itemData: data,
-                    quantity: numOrdered,
-                    editable: true
+                    item: item
                 }
             });
         categoriesItemsMap.set(category, itemsFromCategory);

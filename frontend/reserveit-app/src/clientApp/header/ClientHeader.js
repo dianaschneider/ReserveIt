@@ -10,8 +10,7 @@ const ClientHeader = (props) => {
     const notification = (type, message) => {
         return {
             message: message,
-            type: type,
-            table: props.tableId
+            type: type
         }
     }
     const onClickNotify = () => {

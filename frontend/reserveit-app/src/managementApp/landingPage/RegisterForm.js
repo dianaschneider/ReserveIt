@@ -1,48 +1,46 @@
-import React from "react";
-import {Button, Form, Input} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import React, {useState} from "react";
 import './Styling.css'
-import axios from "axios";
-import {DATABASE} from "../fetchingData/Constants";
+import RegisterRestaurantForm from "./RegisterRestaurantForm";
+import RegisterAdminForm from "./RegisterAdminForm";
+import {Row} from "antd";
+import Logo from "../../resources/images/reserveit-logo.svg";
+import {useNavigate} from "react-router-dom";
 
-//TODO: Create register form that will create a purchase for the management app & will configure the account for the restaurant
 const RegisterForm = (props) => {
-    const onFinish = (values) => {
-        axios.post(DATABASE + "/auth/signup", values).then(() => {
-            props.updateLoginMode(true);
-        })
-            .catch(() => alert('Wrong credentials'))
+    const [restaurantId, setRestaurantId] = useState(0);
+    const [registerRestaurant, setRegisterRestaurant] = useState(true);
+    let navigate = useNavigate();
+
+    const updateRestaurantId = (id) => {
+        setRestaurantId(id);
     };
 
+    const updateRegsiterRestaurantMode = (mode) => {
+        setRegisterRestaurant(mode);
+    };
+
+    const changeToLogin = () => {
+        navigate('/')
+    }
+
     return (
-        <Form
-            name="register-form"
-            className="form"
-            initialValues={{remember: true,}}
-            onFinish={onFinish}
-        >
-            <Form.Item
-                name="username"
-                rules={[{required: true, message: 'Please input your Username!',},]}
-            >
-                <Input prefix={<UserOutlined/>} placeholder="Username"/>
-            </Form.Item>
-            <Form.Item
-                name="password"
-                rules={[{required: true, message: 'Please input your Password!',},]}
-            >
-                <Input
-                    prefix={<LockOutlined/>}
-                    type="password"
-                    placeholder="Password"
-                />
-            </Form.Item>
-            <Form.Item>
-                <Button type="primary" htmlType="submit" className="form-buttons-login">
-                    Register
-                </Button>
-            </Form.Item>
-        </Form>
+        <div>
+            <Row>
+                <img src={Logo} alt="reserveit-logo" className="logo"/>
+            </Row>
+            <Row className="login-form">
+                {registerRestaurant ?
+                    <RegisterRestaurantForm
+                        updateRestaurantId={updateRestaurantId}
+                        updateRegisterRestaurantMode={updateRegsiterRestaurantMode}
+                    />
+                    :
+                    <RegisterAdminForm
+                        restaurantId={restaurantId}
+                        changeToLogin={changeToLogin}
+                    />}
+            </Row>
+        </div>
     );
 };
 

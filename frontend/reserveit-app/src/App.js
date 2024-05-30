@@ -1,28 +1,70 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import LandingPage from "./managementApp/landingPage/LandingPage";
 import RestaurantClientMainPage from "./clientApp/mainPage/RestaurantClientMainPage";
 import RestaurantManagementMainPage from "./managementApp/mainPage/RestaurantManagementMainPage";
 import {useState} from "react";
+import LoginForm from "./managementApp/landingPage/LoginForm";
+import RegisterForm from "./managementApp/landingPage/RegisterForm";
 
 function App() {
     const [maxTableNumber, setMaxTableNumber] = useState(20);
-    const [userToken, setUserToken] = useState('');
+    const [userId, setUserId] = useState(0);
+    const [admin, setAdmin] = useState(false);
 
     const updateMaxTableNumber = (number) => {
         setMaxTableNumber(number);
     }
-    const initialiseUserToken = (token) => {
-        setUserToken(token);
+    const initialiseUser = (user, admin) => {
+        setUserId(user);
+        setAdmin(admin)
+        localStorage.setItem('userId', user);
+        localStorage.setItem('admin', admin);
     }
+
+    const refreshMainApp = (userId, admin) => {
+        setUserId(userId)
+        setAdmin(admin)
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('admin', admin);
+    }
+
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LandingPage initialiseUserToken={initialiseUserToken}/>}/>
-                <Route path="/:restaurantId/tables/:tableId" element={<RestaurantClientMainPage maxTableNumber={maxTableNumber} userToken={userToken}/>}/>
-                <Route path="/restaurant/:restaurantId" element={<RestaurantManagementMainPage updateMaxTableNumber={updateMaxTableNumber} userToken={userToken}/>}/>
+                <Route path="/" element={<LoginForm initialiseUser={initialiseUser}/>}/>
+                <Route path="/register" element={<RegisterForm />}/>
+                <Route path="/client-app/:restaurantId/tables/:tableIndex"
+                       element={<RestaurantClientMainPage maxTableNumber={maxTableNumber} userToken={userId}/>}/>
+                <Route path="/restaurant/:restaurantId"
+                       element={<RestaurantManagementMainPage updateMaxTableNumber={updateMaxTableNumber}
+                                                              userId={userId}
+                                                              admin={admin}
+                                                              refreshApp={refreshMainApp}
+                       />}/>
             </Routes>
         </BrowserRouter>
     );
 }
 
 export default App;
+
+/*
+Login [NO FUTURE IMPROVEMENTS]
+* works fine - no bugs - atat de staff cat si admin
+
+Register [NO FUTURE IMPROVEMENTS]
+* Register restaurant - works fine - bug daca se da refresh - logica secventiala cu adminul
+* Register admin - works fine - no bugs
+
+RestaurantManagementMainPage
+* Create Table Configuration - works fine - no bugs
+* Configure Menu - works fine - no bugs + to make table editable and edit menu items, to preview images, to delete menu items, to delete entire menu
+* Configure Staff - works fine - no bugs + to make table editable and edit staff data, to delete staff members
+* Table Plan -  works fine - no bugs
+* Active Orders -  works fine - no bugs + add images
+* Table Info -  works fine - bug waiter not showing right+ same as above
+
+RestaurantClientMainPage [ONLY 1 FUTURE IMPROVEMENT!!!]
+* Menu Component - works fine - no bugs + make titles of categories look better
+* Cart component  -  works fine - no bugs
+* Notifications - works fine - no bugs
+* */

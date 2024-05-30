@@ -3,9 +3,9 @@ import {Table} from 'antd';
 
 const columns = [
     {
-        title: 'Item',
+        title: 'Name',
         dataIndex: 'name',
-        key: 'item'
+        key: 'name'
     },
     {
         title: 'Category',
@@ -21,9 +21,11 @@ const columns = [
         title: 'Price',
         dataIndex: 'price',
         key: 'price',
-        render: (price) => {
-            return <div>{price.value} {price.currency}</div>
-        }
+    },
+    {
+        title: 'Currency',
+        dataIndex: 'currency',
+        key: 'currency',
     },
     {
         title: 'Description',

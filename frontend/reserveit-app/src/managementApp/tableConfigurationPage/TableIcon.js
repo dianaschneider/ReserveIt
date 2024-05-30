@@ -8,7 +8,6 @@ import './resources/Styling.css'
 
 const TableIcon = (props) => {
     const imgSrc = props.status === CONFIG_TABLE ? configTable : (props.status === FREE_TABLE ? freeTable : busyTable);
-
     if (props.status === CONFIG_TABLE) {
         return (
             <Draggable
@@ -30,7 +29,7 @@ const TableIcon = (props) => {
         return (
             <button style={{position: 'absolute', left: props.x, top: props.y}}
                     className="table-button"
-                    onClick={() => props.accessTable(props.index)}
+                    onClick={() => props.accessTable(props.id)}
             >
                 <img alt="table" src={imgSrc} height={100} width={100}/>
                 <span style={{display: 'flex', justifyContent: 'center'}}>{props.index}</span>
