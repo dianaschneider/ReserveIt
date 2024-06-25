@@ -57,10 +57,10 @@ Register [NO FUTURE IMPROVEMENTS]
 
 RestaurantManagementMainPage
 * Create Table Configuration - works fine - no bugs
-* Configure Menu - works fine - no bugs + to make table editable and edit menu items, to preview images, to delete menu items, to delete entire menu
-* Configure Staff - works fine - no bugs + to make table editable and edit staff data, to delete staff members
+* Configure Menu - works fine - no bugs
+* Configure Staff - works fine - no bugs
 * Table Plan -  works fine - no bugs
-* Active Orders -  works fine - no bugs + add images
+* Active Orders -  works fine - no bugs
 * Table Info -  works fine - bug waiter not showing right+ same as above
 
 RestaurantClientMainPage [ONLY 1 FUTURE IMPROVEMENT!!!]

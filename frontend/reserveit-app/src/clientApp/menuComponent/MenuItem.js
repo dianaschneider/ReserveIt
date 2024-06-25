@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Button, Checkbox, Col, Row} from "antd";
 import './resources/Styling.css'
 import {MinusOutlined, PlusOutlined} from '@ant-design/icons';
+import ImageFile from "../../ImageFile";
 
 const MenuItem = (props) => {
     const itemData = props.itemData
@@ -34,50 +35,51 @@ const MenuItem = (props) => {
     if (props.item.numberRequested === 0 && props.cartComponent)
         return <></>
     else
-        return <Row className="menuItemRow">
-            <Row className="menuItemName">{itemData.name}</Row>
-            <Row className="menuItemData">{itemData.description}</Row>
-            <Row>
-                <Col span={12}>
-                    <Row className="menuItemData">
-                        <Col span={12}>Quantity</Col>
-                        <Col span={12}>{itemData.quantity}</Col>
-                    </Row>
-                    <Row className="menuItemData">
-                        <Col span={12}>Price</Col>
-                        <Col span={12}>{itemData.price} {itemData.currency}</Col>
-                    </Row>
-                </Col>
-                {/*TODO: RENDER IMAGE WHEN THE FETCHING FROM BACKEND WILL BE AVAILABLE*/}
-                <Col span={12}>{itemData.image}</Col>
-            </Row>
-            {
-                props.item.editable ?
-                    <Row className="buttonRowStyling">
+        return (
+            <div className="menuItemCard">
+                <Row>
+                    {itemData.image && (
+                        <Col span={24} className="menuItemImage">
+                            <ImageFile filePath={itemData.image} />
+                        </Col>
+                    )}
+                </Row>
+                <Row className="menuItemContent">
+                    <Col span={24} className="menuItemName">
+                        {itemData.name}
+                    </Col>
+                    <Col span={24} className="menuItemDescription">
+                        {itemData.description}
+                    </Col>
+                    <Col span={24} className="menuItemDetails">
                         <Row>
-                            <Col>
-                                <Button onClick={onMinusClick}>
-                                    <MinusOutlined/>
-                                </Button>
-                            </Col>
-                            <Col style={{marginTop: '5px'}}>{numAdded}</Col>
-                            <Col>
-                                <Button onClick={onPlusClick}>
-                                    <PlusOutlined/>
-                                </Button>
-                            </Col>
+                            <Col span={12} className="detailLabel">Quantity</Col>
+                            <Col span={12} className="detailValue">{itemData.quantity}</Col>
                         </Row>
-                    </Row>
-                    :
+                        <Row>
+                            <Col span={12} className="detailLabel">Price</Col>
+                            <Col span={12} className="detailValue">{itemData.price} {itemData.currency}</Col>
+                        </Row>
+                    </Col>
+                </Row>
+                {props.item.editable ? (
                     <Row className="buttonRowStyling">
-                        <Col style={{marginRight: '20px'}}>
-                            <Checkbox defaultChecked={props.item.delivered} disabled/>
+                        <Col className="buttonGroup">
+                            <Button onClick={onMinusClick} shape="circle" icon={<MinusOutlined />} />
+                            <span className="itemCount">{numAdded}</span>
+                            <Button onClick={onPlusClick} shape="circle" icon={<PlusOutlined />} />
+                        </Col>
+                    </Row>
+                ) : (
+                    <Row className="buttonRowStyling">
+                        <Col>
+                            <Checkbox defaultChecked={props.item.delivered} disabled />
                             <p>Delivered {props.item.numberRequested} items</p>
                         </Col>
                     </Row>
-            }
-
-        </Row>
+                )}
+            </div>
+        );
 }
 
 export default MenuItem;

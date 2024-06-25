@@ -7,7 +7,6 @@ import MenuConfiguration from "../menuConfigurationPage/MenuConfiguration";
 import TablePlan from "../tablePlanPage/TablePlan";
 import Orders from "../ordersPage/Orders";
 import TablePage from "../tablePage/TablePage";
-import {deleteFoodFromMenu} from "../fetchingData/MenuFetchingDataMethods";
 import axios from "axios";
 import {DATABASE} from "../fetchingData/Constants";
 import {useParams} from "react-router";
@@ -73,7 +72,8 @@ const RestaurantManagementMainPage = (props) => {
             .catch(() => alert('Menu data could not be fetched, please try again later!'));
     }
     const addFoodToMenu = async (item) => {
-        axios.post(`${DATABASE}/items?menuId=` + menuId, item)
+        axios.post(`${DATABASE}/items?menuId=` + menuId, item,
+            {headers: {'Content-Type': 'multipart/form-data',}})
             .then(res => {
                 if (res.status === 200) {
                     refreshData();
@@ -81,16 +81,37 @@ const RestaurantManagementMainPage = (props) => {
             })
             .catch(() => alert('Item could not be added to menu!'));
     }
+    const deleteFoodFromMenu = async (itemId, menuId) => {
+        axios.delete(`${DATABASE}/items?itemId=${itemId}&menuId=${menuId}`)
+            .then(res => {
+                if (res.status === 200) {
+                    refreshData();
+                }
+            })
+            .catch(() => alert('Item could not be deleted from menu!'));
+    }
+    const updateFoodFromMenu = async (item) => {
+        axios.put(`${DATABASE}/items/update?id=${item.id}&name=${item.name}&quantity=${item.quantity}&price=${item.price}&currency=${item.currency}&description=${item.description}`)
+            .then(res => {
+                if (res.status === 200) {
+                    refreshData();
+                }
+            })
+            .catch(() => alert('Item could not be updated!'));
+    }
 
     //update menu info in db
     const saveFoodItemInRestaurantMenu = (item) => {
         addFoodToMenu(item).then(() => {
         });
     }
-    const deleteFoodItemFromRestaurantMenu = (items, itemId) => {
-        //todo:
-        items.filter(() => deleteFoodFromMenu(itemId));
-        setFoodData(items);
+    const deleteFoodItemFromRestaurantMenu = (itemId, menuId) => {
+        deleteFoodFromMenu(itemId, menuId).then(() => {
+        });
+    }
+    const updateFoodItemFromRestaurantMenu = (item) => {
+        updateFoodFromMenu(item).then(() => {
+        });
     }
 
     //get tables info
@@ -179,6 +200,24 @@ const RestaurantManagementMainPage = (props) => {
             })
             .catch(() => alert('Waiter could not be assigned!'));
     }
+    const deleteWaiter = async (waiterId) => {
+        axios.delete(`${DATABASE}/waiters?waiterId=${waiterId}`)
+            .then(res => {
+                if (res.status === 200) {
+                    refreshData();
+                }
+            })
+            .catch(() => alert('Waiter could not be deleted!'));
+    }
+    const updateWaiter = async (waiterId, firstName, lastName) => {
+        axios.put(`${DATABASE}/waiters/update?id=${waiterId}&firstName=${firstName}&lastName=${lastName}`)
+            .then(res => {
+                if (res.status === 200) {
+                    refreshData();
+                }
+            })
+            .catch(() => alert('Waiter could not be updated!'));
+    }
 
     const deleteNotification = async (notificationId) => {
         axios.delete(`${DATABASE}/notifications?notificationId=${notificationId}`)
@@ -237,7 +276,9 @@ const RestaurantManagementMainPage = (props) => {
             children: <MenuConfiguration
                 foodData={foodData}
                 saveItem={saveFoodItemInRestaurantMenu}
-                deleteItem={deleteFoodItemFromRestaurantMenu}/>
+                deleteItem={deleteFoodItemFromRestaurantMenu}
+                updateItem={updateFoodItemFromRestaurantMenu}
+            />
         },
         {
             label: <span><AppstoreOutlined/>Configure Staff</span>,
@@ -247,6 +288,8 @@ const RestaurantManagementMainPage = (props) => {
                 staffData={staffData}
                 saveStaff={addStaffForRestaurant}
                 accessTable={moveToPageTab}
+                deleteWaiter={deleteWaiter}
+                updateWaiter={updateWaiter}
             />
         },
         {

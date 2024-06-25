@@ -1,24 +1,91 @@
-.menuItemRow {
-    height: 200px;
-    width: 720px;
-    background-color: #e3eff6;
-    display: inline-block;
+/*.menuItemRow {*/
+/*    height: 380px;*/
+/*    width: 720px;*/
+/*    background-color: #e3eff6;*/
+/*    display: inline-block;*/
+/*    margin-bottom: 10px;*/
+/*    margin-top: 0px;*/
+/*}*/
+
+/*.menuItemName {*/
+/*    font-size: large;*/
+/*    font-weight: bold;*/
+/*    font-family: 'Roboto Condensed', sans-serif;*/
+/*}*/
+
+/*.menuItemData {*/
+/*    font-size: medium;*/
+/*    font-family: 'Roboto Condensed';*/
+/*}*/
+
+/*.buttonRowStyling {*/
+/*    display: flex;*/
+/*    justify-content: right;*/
+/*}*/
+.menuItemCard {
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
-    margin-top: 0px;
+    display: flex;
+    align-items: center;
+    width: 720px;
+    height: 250px;
+    box-sizing: border-box;
+}
+
+.menuItemImage {
+    width: 30%; /* Set a fixed width for the image container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menuItemImage img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.menuItemContent {
+    width: 50%; /* Allow content to take 50% of the remaining space */
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
 }
 
 .menuItemName {
-    font-size: large;
+    font-size: 1.2em;
     font-weight: bold;
-    font-family: 'Roboto Condensed', sans-serif;
+    margin-bottom: 5px;
 }
 
-.menuItemData {
-    font-size: medium;
-    font-family: 'Roboto Condensed';
+.menuItemDescription {
+    font-size: 1em;
+    color: #555;
 }
 
-.buttonRowStyling {
+.menuItemActions {
+    width: 20%; /* Set a fixed width for the actions container */
     display: flex;
-    justify-content: right;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: right;
+}
+
+.menuItemPrice {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.buttonGroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

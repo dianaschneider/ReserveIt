@@ -3,6 +3,7 @@ import {Button, Checkbox, Col, Row} from "antd";
 import './resources/Styling.css'
 import axios from "axios";
 import {DATABASE} from "../fetchingData/Constants";
+import ImageFile from "../../ImageFile";
 
 const OrderContent = (props) => {
     const [displayedDataItems, setDisplayedDataItems] = useState([]);
@@ -66,8 +67,15 @@ const OrderContent = (props) => {
                                     <Col
                                         span={12}>{element.itemData.price} {element.itemData.currency}</Col>
                                 </Row>
+                                <Row>
+                                    {
+                                        element.itemData.image === "" || element.itemData.image === null ?
+                                        <></>
+                                        :
+                                        <ImageFile filePath={element.itemData.image}/>
+                                    }
+                                </Row>
                             </Col>
-                            {/*TODO: RENDER IMAGE WHEN THE FETCHING FROM BACKEND WILL BE AVAILABLE*/}
                         </Row>
                     </Col>
                     <Col span={12}>
